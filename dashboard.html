@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h1>Welcome, {{ session['username'] }}!</h1>
+
+    <!-- Notifications -->
+    {% if notifications %}
+        <div class="notifications">
+            {% for notification in notifications %}
+                <div class="alert alert-info">{{ notification }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Task List Section -->
+    <section class="tasks-section">
+        <h2>Your Tasks</h2>
+        {% if tasks %}
+            <ul class="task-list">
+                {% for task in tasks %}
+                    <li class="task-item">
+                        <div class="task-details">
+                            <strong>{{ task.task_name }}</strong> 
+                            <span class="{% if task.priority == 'High' %}high-priority{% elif task.priority == 'Medium' %}medium-priority{% else %}low-priority{% endif %}">
+                                ({{ task.priority }})
+                            </span>
+                        </div>
+                        <div class="task-deadline">
+                            Deadline: {{ task.deadline }}
+                        </div>
+                        <div class="task-actions">
+                            <a class="btn btn-danger" href="{{ url_for('delete_task', task_id=task.id) }}">Delete</a>
+                            <a class="btn btn-primary" href="{{ url_for('send_sms', task_id=task.id) }}">Send Reminder</a>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No tasks available. Add a task below!</p>
+        {% endif %}
+    </section>
+
+    <!-- Add Task Section -->
+    <section class="add-task-section">
+        <h2>Add New Task</h2>
+        <form method="POST" class="add-task-form">
+            <div class="form-group">
+                <label for="task">Task Name</label>
+                <input type="text" id="task" name="task" placeholder="Enter task name" required>
+            </div>
+            <div class="form-group">
+                <label for="deadline_date">Deadline Date</label>
+                <input type="date" id="deadline_date" name="deadline_date" required>
+            </div>
+            <div class="form-group">
+                <label for="deadline_time">Deadline Time</label>
+                <input type="time" id="deadline_time" name="deadline_time" required>
+            </div>
+            <div class="form-group">
+                <label for="priority">Priority</label>
+                <select id="priority" name="priority" required>
+                    <option value="High">High</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Low">Low</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-success">Add Task</button>
+        </form>
+    </section>
+
+    <a class="btn btn-secondary logout-btn" href="{{ url_for('logout') }}">Logout</a>
+</div>
+{% endblock %}
